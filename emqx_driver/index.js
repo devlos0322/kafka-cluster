@@ -1,25 +1,43 @@
+//https://github.com/emqx/emqx-tutorial/blob/master/en/client_dev/javascript.md
+//docker run -d --name emqx -p 18083:18083 -p 1883:1883 emqx/emqx:latest
 const mqtt = require('mqtt')
 
-async function main() {
-    // const url = 'mqtt://localhost:1883'
-    const url = 'mqtt://broker.emqx.io:1883'
-    const  clinet = await mqtt.connect(url, {
-    clientId: 'emqx_client_id',
-    username: '',
-    password: '',
-    })
-    client.on('connect', () => {
-        client.subscribe('presence', (err) => {
+// connect options
+const options = {
+      connectTimeout: 4000,
+
+      // Authentication
+      clientId: 'mqttjs_3b039063b5',
+      username: '',
+      password: '',
+
+      keepalive: 60,
+      clean: true,
+}
+
+const TCP_URL = 'mqtt://localhost:1883'
+
+const client = mqtt.connect(TCP_URL, options)
+
+client.on('connect', () => {
+    setInterval(function(){
+        client.subscribe('presence', function (err) {
             if (!err) {
-            setInterval(() => {
-                client.publish('presence', 'Hello EMQ X')
-            }, 1000)
+            client.publish('presence', 'Hello mqtt')
             }
         })
-    })
-    client.on('message', (topic, message) => {
-    // message is Buffer
-    console.log('received from', topic, message.toString())
-    })
-}
-main()
+    },1000)
+})
+
+client.on('message', (topic, message, packet) => {
+	console.log("message is "+ message);
+	console.log("topic is "+ topic);
+});
+
+client.on('reconnect', (error) => {
+    console.log('reconnecting:', error)
+})
+
+client.on('error', (error) => {
+    console.log('Connect Error:', error)
+})
