@@ -8,8 +8,8 @@ const options = {
 
       // Authentication
       clientId: 'mqttjs_3b039063b5',
-      username: '',
-      password: '',
+      username: 'tester1',
+      password: 'test123@',
 
       keepalive: 60,
       clean: true,
