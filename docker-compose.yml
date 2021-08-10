@@ -11,12 +11,14 @@ services:
     depends_on: 
       - zookeeper
     ports:
-      - "9092:9092"
+      - "9094:9094"
     environment: 
-      KAFKA_ADVERTISED_HOST_NAME: 127.0.0.1
-      KAFKA_ADVERTISED_PORT: 9092
-      KAFKA_CREATE_TOPICS: "test_topic:1:1" #Topic name, partition cnt, replica cnt
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://:9092,OUTSIDE://192.168.33.52:9094
+      KAFKA_LISTENERS: INSIDE://:9092,OUTSIDE://:9094
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+      KAFKA_CREATE_TOPICS: "test_topic:1:1" #Topic name, partition cnt, replica cnt
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
   producer:
@@ -28,8 +30,12 @@ services:
       dockerfile: dockerfile
     stdin_open: true
     tty: true
-#  consumer:
-#   container_name: local-consumer
-#    build: 
-#      context: .
-#      dockerfile: dockerfile
+  consumer:
+    depends_on: 
+      - kafka
+    container_name: local-consumer
+    build: 
+      context: .
+      dockerfile: dockerfile
+    stdin_open: true
+    tty: true
