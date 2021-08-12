@@ -20,18 +20,33 @@ const TCP_URL = 'mqtt://localhost:1883'
 const client = mqtt.connect(TCP_URL, options)
 
 client.on('connect', () => {
+    client.subscribe({'test1': {qos: 1}}, function (err) {
+        if (!err) {
+        }
+    })
+    let flag = 0;
     setInterval(function(){
-        client.subscribe('presence', function (err) {
-            if (!err) {
-            client.publish('presence', 'Hello mqtt')
-            }
-        })
+        /*
+       
+        */
+        if(flag) {
+            var options = {
+                retain:true,
+                qos:1
+            };
+            client.publish('test1', 'Hello mqtt', options);
+            console.log('Publish', 'topic', 'Hello mqtt');
+            flag = 0;
+        } else {
+            client.publish('test2', 'Hello mqtt');
+            console.log('Publish', 'test1', 'Hello mqtt');
+            flag = 1;
+        }
     },1000)
 })
 
 client.on('message', (topic, message, packet) => {
-	console.log("message is "+ message);
-	console.log("topic is "+ topic);
+    console.log('Cousume', topic, message.toString());
 });
 
 client.on('reconnect', (error) => {
