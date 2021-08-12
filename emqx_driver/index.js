@@ -8,8 +8,8 @@ const options = {
 
       // Authentication
       clientId: 'mqttjs_3b039063b5',
-      username: 'tester1',
-      password: 'test123@',
+      //username: 'tester1',
+      //password: 'test123@',
 
       keepalive: 60,
       clean: true,
@@ -20,7 +20,7 @@ const TCP_URL = 'mqtt://localhost:1883'
 const client = mqtt.connect(TCP_URL, options)
 
 client.on('connect', () => {
-    client.subscribe({'test1': {qos: 1}}, function (err) {
+    client.subscribe({'hello-mqtt-kafka': {qos: 1}}, function (err) {
         if (!err) {
         }
     })
@@ -29,20 +29,9 @@ client.on('connect', () => {
         /*
        
         */
-        if(flag) {
-            var options = {
-                retain:true,
-                qos:1
-            };
-            client.publish('test1', 'Hello mqtt', options);
-            console.log('Publish', 'topic', 'Hello mqtt');
-            flag = 0;
-        } else {
-            client.publish('test2', 'Hello mqtt');
-            console.log('Publish', 'test1', 'Hello mqtt');
-            flag = 1;
-        }
-    },1000)
+        client.publish('hello-mqtt-kafka', 'Hello mqtt', options);
+        console.log('Publish', 'hello-mqtt-kafka', 'Hello mqtt');
+    },5000)
 })
 
 client.on('message', (topic, message, packet) => {
