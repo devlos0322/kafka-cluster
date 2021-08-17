@@ -82,7 +82,9 @@ services:
       KAFKA_ZOOKEEPER_CONNECT:  zk1:2181,zk2:2181,zk3:2181
       KAFKA_ADVERTISED_HOST_NAME: 192.168.33.52
       KAFKA_ADVERTISED_PORT: 9093
-      KAFKA_LOG_RETENTION_HOURS: "168"
+      KAFKA_LOG_RETENTION_HOURS: "168"      # 브로커 로그 유지시간
+      KAFKA_ARROW_AUTO_CREATE_TOPICS: false #브로커에 선언하지 않은 토픽으로 메시지가 들어올 경우 토픽을 자동으로 생성하지 않도록 함
+      KAFKA_DELETE_TOPIC_ENABLE: true       # 디스크 용량 확보를 위해 토픽을 삭제할 수 있도록 설정함. (삭제 플래그 -> 정말 삭제)
       KAFKA_LOG_RETENTION_BYTES: "100000000"
 
   zk1:
@@ -163,7 +165,7 @@ services:
       - kafka3
       - emq
     environment:
-      - KAFKA_HOSTS="kafka1,kafka2,kafka3"
+      - KAFKA_HOSTS="kafka1,kafka2,kafka3"zjs
     restart: unless-stopped
 
   elasticsearch:
