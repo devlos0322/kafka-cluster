@@ -1,0 +1,16 @@
+#
+# https://hub.docker.com/r/wurstmeister/kafka/
+# https://better-coding.com/building-apache-kafka-cluster-using-docker-compose-and-virtualbox/
+# https://gist.github.com/everpeace/7a317860cab6c7fb39d5b0c13ec2543e
+# https://github.com/zoidbergwill/docker-compose-kafka/blob/master/docker-compose.yml
+# https://www.kaaproject.org/kafka-docker/
+#
+version: '3.3'
+
+services:
+  emq:
+    image: emqx/emqx:latest
+    ports:
+      - "1884:1883"
+      - "8083:8083"
+      - "18083:18083"
