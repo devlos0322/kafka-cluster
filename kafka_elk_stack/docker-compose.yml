@@ -68,6 +68,8 @@ services:
       - 9092:9092
       - 9991:9991
     container_name: kafka101
+    # cpus: ".10"
+    # mem_limit: "0.2g"
     environment:
       KAFKA_BROKER_ID: 101
       KAFKA_JMX_PORT: 9991
@@ -83,3 +85,43 @@ services:
       CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
       CONFLUENT_METRICS_ENABLE: 'false'
       KAFKA_HEAP_OPTS: '-Xmx512M -Xms512M'
+
+  kafka_manager:
+    image: hlebalbau/kafka-manager:stable
+    depends_on:
+      - zk1
+      - kafka101
+    ports:
+      - 9000:9000
+    environment:
+      ZK_HOSTS: zookeeper1:2181
+      APPLICATION_SECRET: "random-secret"
+
+  portainer:
+    image: portainer/portainer-ce:alpine
+    container_name: portainer
+    restart: always
+    ports:
+      - 8880:9000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./portainer_data:/data
+
+  akhq:
+    # build:
+    #   context: .
+    image: tchiotludo/akhq
+    environment:
+      AKHQ_CONFIGURATION: |
+        akhq:
+          connections:
+            docker-kafka-server:
+              properties:
+                bootstrap.servers: "kafka1:29092"
+              connect:
+                - name: "connect"
+                  url: "http://connect:8083"
+    ports:
+      - 18080:8080
+    links:
+      - kafka101
