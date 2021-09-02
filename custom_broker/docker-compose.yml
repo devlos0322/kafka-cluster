@@ -2,34 +2,37 @@
 version: '3'
 services:
   zookeeper-1:
-    image: elevy/zookeeper:latest
+    image: confluentinc/cp-zookeeper:latest
     environment:
       MYID: 1
       SERVERS: zookeeper-1,zookeeper-2,zookeeper-3
     ports:
-      - "2181:2181"
-      - "2888"
-      - "3888"
+      - "2181:2181" #클라이언트 연결을 감지하는 포트
+      - "2888"  # 클러스터간 동기화를 위한 포트
+      - "3888"  # Leader를 선출하기 위한 포트
+    container_name: zookeeper-1
 
   zookeeper-2:
-    image: elevy/zookeeper:latest
+    image: confluentinc/cp-zookeeper:latest
     environment:
       MYID: 2
       SERVERS: zookeeper-1,zookeeper-2,zookeeper-3
     ports:
-      - "2181:2181"
-      - "2888"
-      - "3888"
+      - "2181:2181" # 클라이언트 연결을 감지하는 포트
+      - "2888"  # 클러스터간 동기화를 위한 포트
+      - "3888"  # Leader를 선출하기 위한 포트
+    container_name: zookeeper-2
 
   zookeeper-3:
-    image: elevy/zookeeper:latest
+    image: confluentinc/cp-zookeeper:latest
     environment:
       MYID: 3
       SERVERS: zookeeper-1,zookeeper-2,zookeeper-3
     ports:
-      - "2181:2181"
-      - "2888"
-      - "3888"
+      - "2181:2181" # 클라이언트 연결을 감지하는 포트
+      - "2888"  # 클러스터간 동기화를 위한 포트
+      - "3888"  # Leader를 선출하기 위한 포트
+    container_name: zookeeper-3
 
   kafka-1:
     image: wurstmeister/kafka
@@ -37,6 +40,11 @@ services:
       - zookeeper-1
       - zookeeper-2
       - zookeeper-3
+    ports:
+      - "9091:9092"
+    environment: 
+      KAFKA_BROKER_ID: 1  # 브로커 아이디 지정
+      KAFKA_ZOOKEEPER_CONNECT:  zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181
 
   kafka-2:
     image: wurstmeister/kafka
@@ -44,6 +52,8 @@ services:
       - zookeeper-1
       - zookeeper-2
       - zookeeper-3
+    ports:
+      - "9092:9092"
 
   kafka-3:
     image: wurstmeister/kafka
@@ -51,6 +61,8 @@ services:
       - zookeeper-1
       - zookeeper-2
       - zookeeper-3
+    ports:
+      - "9093:9092"
 
   kafka-bridge:
     image: sheepkiller/kafka-manager:latest # 교체될 수 있음
