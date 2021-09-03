@@ -8,7 +8,7 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_SYNC_LIMIT: 2
-     ZOOKEEPER_SERVERS: zookeeper-1:2888:3888,zookeeper-2:2888:3888,zookeeper-3:2888:3888
+      ZOOKEEPER_SERVERS: zookeeper-1:2888:3888,zookeeper-2:2888:3888,zookeeper-3:2888:3888
       # SERVERS: zookeeper-1,zookeeper-2,zookeeper-3
     ports:
       - "2181:2181" #클라이언트 연결을 감지하는 포트
@@ -22,7 +22,7 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_SYNC_LIMIT: 2
-     ZOOKEEPER_SERVERS: zookeeper-1:2888:3888,zookeeper-2:2888:3888,zookeeper-3:2888:3888
+      ZOOKEEPER_SERVERS: zookeeper-1:2888:3888,zookeeper-2:2888:3888,zookeeper-3:2888:3888
       # SERVERS: zookeeper-1,zookeeper-2,zookeeper-3
     ports:
       - "2182:2181" # 클라이언트 연결을 감지하는 포트
@@ -36,7 +36,7 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_SYNC_LIMIT: 2
-     ZOOKEEPER_SERVERS: zookeeper-1:2888:3888,zookeeper-2:2888:3888,zookeeper-3:2888:3888
+      ZOOKEEPER_SERVERS: zookeeper-1:2888:3888,zookeeper-2:2888:3888,zookeeper-3:2888:3888
     ports:
       - "2183:2181" # 클라이언트 연결을 감지하는 포트
       - "2888"  # 클러스터간 동기화를 위한 포트
@@ -50,17 +50,17 @@ services:
       - zookeeper-2
       - zookeeper-3
     ports:
-      - 9091:9092
+      - 9091:9091
       - 9991:9991
     cpus: ".10"
     mem_limit: "0.2g"
     environment: 
       KAFKA_BROKER_ID: 1  # 브로커 아이디 지정
       KAFKA_ZOOKEEPER_CONNECT:  zookeeper-1:2181,zookeeper-2:2182,zookeeper-3:2183
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-1:9091,PLAINTEXT_HOST://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-1:29092,PLAINTEXT_HOST://localhost:9091
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_ADVERTISED_PORT: 9091             # 브로커 광고 포튼
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
       KAFKA_JMX_PORT: 9991
       CONFLUENT_METRICS_ENABLE: 'false'
       KAFKA_HEAP_OPTS: '-Xmx512M -Xms512M'
@@ -73,17 +73,17 @@ services:
       - zookeeper-3
     ports:
       - 9092:9092
-      - 9991:9991
+      - 9992:9992
     cpus: ".10"
     mem_limit: "0.2g"
     environment: 
       KAFKA_BROKER_ID: 2  # 브로커 아이디 지정
       KAFKA_ZOOKEEPER_CONNECT:  zookeeper-1:2181,zookeeper-2:2182,zookeeper-3:2183
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-2:9092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-2:29092,PLAINTEXT_HOST://localhost:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_ADVERTISED_PORT: 9092             # 브로커 광고 포튼
-      KAFKA_JMX_PORT: 9991
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_JMX_PORT: 9992
       CONFLUENT_METRICS_ENABLE: 'false'
       KAFKA_HEAP_OPTS: '-Xmx512M -Xms512M'
 
@@ -94,18 +94,18 @@ services:
       - zookeeper-2
       - zookeeper-3
     ports:
-      - 9093:9092
-      - 9991:9991
+      - 9093:9093
+      - 9993:9993
     cpus: ".10"
     mem_limit: "0.2g"
     environment: 
       KAFKA_BROKER_ID: 2  # 브로커 아이디 지정
       KAFKA_ZOOKEEPER_CONNECT:  zookeeper-1:2181,zookeeper-2:2182,zookeeper-3:2183
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-3:9093,PLAINTEXT_HOST://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-3:29092,PLAINTEXT_HOST://localhost:9093
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_ADVERTISED_PORT: 9093             # 브로커 광고 포튼
-      KAFKA_JMX_PORT: 9991
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_JMX_PORT: 9993
       CONFLUENT_METRICS_ENABLE: 'false'
       KAFKA_HEAP_OPTS: '-Xmx512M -Xms512M'
 
