@@ -4,135 +4,209 @@ version: '3'
 services:
   zookeeper-1:
     image: confluentinc/cp-zookeeper:latest
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-      ZOOKEEPER_SYNC_LIMIT: 2
-     ZOOKEEPER_SERVERS: zookeeper-1:2888:3888,zookeeper-2:2888:3888,zookeeper-3:2888:3888
-      # SERVERS: zookeeper-1,zookeeper-2,zookeeper-3
+    container_name: zookeeper-1
     ports:
       - "2181:2181" #클라이언트 연결을 감지하는 포트
       - "2888"  # 클러스터간 동기화를 위한 포트
       - "3888"  # Leader를 선출하기 위한 포트
-    container_name: zookeeper-1
+    environment:
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: zookeeper-1:2888:3888;zookeeper-2:2888:3888;zookeeper-3:2888:3888
 
   zookeeper-2:
     image: confluentinc/cp-zookeeper:latest
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-      ZOOKEEPER_SYNC_LIMIT: 2
-     ZOOKEEPER_SERVERS: zookeeper-1:2888:3888,zookeeper-2:2888:3888,zookeeper-3:2888:3888
-      # SERVERS: zookeeper-1,zookeeper-2,zookeeper-3
+    container_name: zookeeper-2
     ports:
-      - "2182:2181" # 클라이언트 연결을 감지하는 포트
+      - "2182:2182" # 클라이언트 연결을 감지하는 포트
       - "2888"  # 클러스터간 동기화를 위한 포트
       - "3888"  # Leader를 선출하기 위한 포트
-    container_name: zookeeper-2
+    environment:
+      ZOOKEEPER_SERVER_ID: 2
+      ZOOKEEPER_CLIENT_PORT: 2182
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: zookeeper-1:2888:3888;zookeeper-2:2888:3888;zookeeper-3:2888:3888
 
   zookeeper-3:
     image: confluentinc/cp-zookeeper:latest
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-      ZOOKEEPER_SYNC_LIMIT: 2
-     ZOOKEEPER_SERVERS: zookeeper-1:2888:3888,zookeeper-2:2888:3888,zookeeper-3:2888:3888
+    container_name: zookeeper-3
     ports:
-      - "2183:2181" # 클라이언트 연결을 감지하는 포트
+      - "2183:2183" # 클라이언트 연결을 감지하는 포트
       - "2888"  # 클러스터간 동기화를 위한 포트
       - "3888"  # Leader를 선출하기 위한 포트
-    container_name: zookeeper-3
+    environment:
+      ZOOKEEPER_SERVER_ID: 3
+      ZOOKEEPER_CLIENT_PORT: 2183
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: zookeeper-1:2888:3888;zookeeper-2:2888:3888;zookeeper-3:2888:3888
+
+##########################
 
   kafka-1:
     image: confluentinc/cp-kafka:latest
+    container_name: kafka-1
     depends_on:
       - zookeeper-1
       - zookeeper-2
       - zookeeper-3
     ports:
-      - 9091:9092
+      - 9091:9091
       - 9991:9991
-    cpus: ".10"
-    mem_limit: "0.2g"
+    # cpus: ".10"
+    mem_limit: "2g"
     environment: 
       KAFKA_BROKER_ID: 1  # 브로커 아이디 지정
       KAFKA_ZOOKEEPER_CONNECT:  zookeeper-1:2181,zookeeper-2:2182,zookeeper-3:2183
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-1:9091,PLAINTEXT_HOST://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-1:29091,PLAINTEXT_HOST://localhost:9091 #두 포트가 달라야하는 요구사항이 있다.
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_ADVERTISED_PORT: 9091             # 브로커 광고 포튼
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
       KAFKA_JMX_PORT: 9991
       CONFLUENT_METRICS_ENABLE: 'false'
       KAFKA_HEAP_OPTS: '-Xmx512M -Xms512M'
+    # volumes:
+    #   - ./kafka-logs
 
   kafka-2:
     image: confluentinc/cp-kafka:latest
+    container_name: kafka-2
     depends_on:
       - zookeeper-1
       - zookeeper-2
       - zookeeper-3
     ports:
       - 9092:9092
-      - 9991:9991
-    cpus: ".10"
-    mem_limit: "0.2g"
+      - 9992:9992
+    # cpus: ".10"
+    mem_limit: "2g"
     environment: 
       KAFKA_BROKER_ID: 2  # 브로커 아이디 지정
       KAFKA_ZOOKEEPER_CONNECT:  zookeeper-1:2181,zookeeper-2:2182,zookeeper-3:2183
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-2:9092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-2:29092,PLAINTEXT_HOST://localhost:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_ADVERTISED_PORT: 9092             # 브로커 광고 포튼
-      KAFKA_JMX_PORT: 9991
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
+      KAFKA_JMX_PORT: 9992
       CONFLUENT_METRICS_ENABLE: 'false'
       KAFKA_HEAP_OPTS: '-Xmx512M -Xms512M'
 
   kafka-3:
     image: confluentinc/cp-kafka:latest
+    container_name: kafka-3
     depends_on:
       - zookeeper-1
       - zookeeper-2
       - zookeeper-3
     ports:
-      - 9093:9092
-      - 9991:9991
-    cpus: ".10"
-    mem_limit: "0.2g"
+      - 9093:9093
+      - 9993:9993
+    # cpus: ".10"
+    mem_limit: "2g"
     environment: 
-      KAFKA_BROKER_ID: 2  # 브로커 아이디 지정
+      KAFKA_BROKER_ID: 3  # 브로커 아이디 지정
       KAFKA_ZOOKEEPER_CONNECT:  zookeeper-1:2181,zookeeper-2:2182,zookeeper-3:2183
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-3:9093,PLAINTEXT_HOST://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-3:29093,PLAINTEXT_HOST://localhost:9093
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_ADVERTISED_PORT: 9093             # 브로커 광고 포튼
-      KAFKA_JMX_PORT: 9991
-      CONFLUENT_METRICS_ENABLE: 'false'
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3  
+      KAFKA_JMX_PORT: 9993
+      CONFLUENT_METRICS_ENABLE: "false"
       KAFKA_HEAP_OPTS: '-Xmx512M -Xms512M'
 
+###################
 
+  jmx-kafka-1:
+      image: "sscaling/jmx-prometheus-exporter"
+      container_name: jmx-kafka-1
+      ports:
+      - "5556"
+      depends_on:
+      - kafka-1
+      environment:
+        CONFIG_YML : "/etc/jmx_exporter/config.yml"
+        JVM_OPTS: "-Xmx512M"
+      volumes:
+      - ./etc/jmx_exporter/config_kafka_1.yml:/etc/jmx_exporter/config.yml
 
-  # kafka-bridge:
-  #   image: sheepkiller/kafka-manager:latest # 교체될 수 있음
-  #   depends_on:
-  #     - kafka-1
-  #     - kafka-2
-  #     - kafka-3
-  #     - zookeeper-1
-  #     - zookeeper-2
-  #     - zookeeper-3
- 
-  # emq:
-  #   image: emqx/emqx:latests
+  jmx-kafka-2:
+      image: "sscaling/jmx-prometheus-exporter"
+      container_name: jmx-kafka-2
+      ports:
+      - "5556"
+      depends_on:
+      - kafka-2
+      environment:
+        CONFIG_YML : "/etc/jmx_exporter/config.yml"
+        JVM_OPTS: "-Xmx512M"
+      volumes:
+      - ./etc/jmx_exporter/config_kafka_2.yml:/etc/jmx_exporter/config.yml
+      
+  jmx-kafka-3:
+      image: "sscaling/jmx-prometheus-exporter"
+      container_name: jmx-kafka-3
+      ports:
+      - "5556"
+      depends_on:
+      - kafka-3
+      environment:
+        CONFIG_YML : "/etc/jmx_exporter/config.yml"
+        JVM_OPTS: "-Xmx512M"
+      volumes:
+      - ./etc/jmx_exporter/config_kafka_3.yml:/etc/jmx_exporter/config.yml
 
-  # elasticsearch:
+####
 
-  # logstash:
-    
-  # kibana:
+  prometheus:
+    image: "prom/prometheus"
+    container_name: prometheus
+    ports:
+     - "9090:9090"
+    volumes:
+     - ./etc/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    command: "--config.file=/etc/prometheus/prometheus.yml"
 
-  # grafana:
-  #   image: grafana/grafana # 교체될 수 있음
-  #   ports:
-  #     - "3000:3000"
-  #   depends_on:
-  #     - elasticsearch
+####
+
+  grafana:
+    image: "grafana/grafana"
+    ports:
+     - "3000:3000"
+    environment:
+      GF_PATHS_DATA : /var/lib/grafana
+      GF_SECURITY_ADMIN_PASSWORD : kafka
+    volumes:
+     - ./grafana/provisioning:/etc/grafana/provisioning
+     - ./grafana/dashboards:/var/lib/grafana/dashboards
+    container_name: grafana
+    depends_on:
+     - prometheus
+
+####
+
+  kafka_manager:
+    image: hlebalbau/kafka-manager:stable
+    depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
+      - kafka-1
+      - kafka-2
+      - kafka-3
+    ports:
+      - 9000:9000
+    environment:
+      ZK_HOSTS: zookeeper-1:2181,zookeeper-2:2182,zookeeper-3:2183
+      APPLICATION_SECRET: "random-secret"
+      KAFKA_MANAGER_AUTH_ENABLED: "true"
+      KAFKA_MANAGER_USERNAME: winitech
+      KAFKA_MANAGER_PASSWORD: winitech
