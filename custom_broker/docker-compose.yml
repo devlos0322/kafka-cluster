@@ -49,6 +49,7 @@ services:
   kafka-1:
     image: confluentinc/cp-kafka:latest
     container_name: kafka-1
+    hostname: kafka-1
     depends_on:
       - zookeeper-1
       - zookeeper-2
@@ -77,6 +78,7 @@ services:
   kafka-2:
     image: confluentinc/cp-kafka:latest
     container_name: kafka-2
+    hostname: kafka-2
     depends_on:
       - zookeeper-1
       - zookeeper-2
@@ -102,6 +104,7 @@ services:
   kafka-3:
     image: confluentinc/cp-kafka:latest
     container_name: kafka-3
+    hostname: kafka-3
     depends_on:
       - zookeeper-1
       - zookeeper-2
@@ -211,3 +214,20 @@ services:
       KAFKA_MANAGER_AUTH_ENABLED: "true"
       KAFKA_MANAGER_USERNAME: winitech
       KAFKA_MANAGER_PASSWORD: winitech
+
+
+  ## https://github.com/cloudhut/kowl
+
+  kowl:
+    image: quay.io/cloudhut/kowl:v1.4.0
+    hostname: kowl
+    restart: on-failure
+    volumes:
+      - ./etc/kowl/config.yaml:/etc/kowl/config.yaml
+    ports:
+      - "8080:8080"
+    entrypoint: ./kowl --config.filepath=/etc/kowl/config.yaml
+    depends_on:
+      - kafka-1
+      - kafka-2
+      - kafka-3
