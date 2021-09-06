@@ -4,16 +4,7 @@ version: '3'
 services:
   zookeeper-1:
     image: confluentinc/cp-zookeeper:latest
-<<<<<<< HEAD
     container_name: zookeeper-1
-=======
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-      ZOOKEEPER_SYNC_LIMIT: 2
-      ZOOKEEPER_SERVERS: zookeeper-1:2888:3888,zookeeper-2:2888:3888,zookeeper-3:2888:3888
-      # SERVERS: zookeeper-1,zookeeper-2,zookeeper-3
->>>>>>> 9a39e2803e3b0bd3b4df758ea80dd37af5cbd86c
     ports:
       - "2181:2181" #클라이언트 연결을 감지하는 포트
       - "2888"  # 클러스터간 동기화를 위한 포트
@@ -23,16 +14,11 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_SYNC_LIMIT: 2
-<<<<<<< HEAD
       ZOOKEEPER_SERVERS: zookeeper-1:2888:3888;zookeeper-2:2888:3888;zookeeper-3:2888:3888
 
   zookeeper-2:
     image: confluentinc/cp-zookeeper:latest
     container_name: zookeeper-2
-=======
-      ZOOKEEPER_SERVERS: zookeeper-1:2888:3888,zookeeper-2:2888:3888,zookeeper-3:2888:3888
-      # SERVERS: zookeeper-1,zookeeper-2,zookeeper-3
->>>>>>> 9a39e2803e3b0bd3b4df758ea80dd37af5cbd86c
     ports:
       - "2182:2182" # 클라이언트 연결을 감지하는 포트
       - "2888"  # 클러스터간 동기화를 위한 포트
@@ -42,15 +28,11 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2182
       ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_SYNC_LIMIT: 2
-<<<<<<< HEAD
       ZOOKEEPER_SERVERS: zookeeper-1:2888:3888;zookeeper-2:2888:3888;zookeeper-3:2888:3888
 
   zookeeper-3:
     image: confluentinc/cp-zookeeper:latest
     container_name: zookeeper-3
-=======
-      ZOOKEEPER_SERVERS: zookeeper-1:2888:3888,zookeeper-2:2888:3888,zookeeper-3:2888:3888
->>>>>>> 9a39e2803e3b0bd3b4df758ea80dd37af5cbd86c
     ports:
       - "2183:2183" # 클라이언트 연결을 감지하는 포트
       - "2888"  # 클러스터간 동기화를 위한 포트
