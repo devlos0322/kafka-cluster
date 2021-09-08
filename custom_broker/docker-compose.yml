@@ -231,3 +231,12 @@ services:
       - kafka-1
       - kafka-2
       - kafka-3
+
+###
+
+  emq:
+    image: emqx/emqx:latest
+    ports:
+      - "1883:1883"
+      - "8083:8083"
+      - "18083:18083"
